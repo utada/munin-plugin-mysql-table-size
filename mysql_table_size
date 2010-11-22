@@ -1,0 +1,73 @@
+#!/usr/local/bin/php
+<?php
+
+$dbname   = getenv('dbname');
+$tables   = getenv('tables');
+$dsn      = getenv('dsn');
+$username = getenv('mysqluser');
+$password = getenv('mysqlpassword');
+$table_list = explode(' ',$tables);
+//print_r($table_list);
+
+if($argc > 1 && $argv[1] == 'authconf') {
+  exit('yes');
+}
+
+if($argc > 1 && $argv[1] == 'config') {
+  die("graph_title Table Data Length
+graph_category mysql $dbname
+graph_vlabel Size
+total.label Total
+");
+}
+
+$dbh = new PDO($dsn,$username,$password);
+$mysql = new MysqlTblSize($dbh);
+
+foreach ($table_list as $_str_schema_table) {
+  $_ary_schema_table = explode('.',$_str_schema_table);
+  $schema = $_ary_schema_table[0];
+  $table  = $_ary_schema_table[1];
+  
+  //print('total.value ' . '0' . "\n");
+  echo "schema=$schema:table=$table\n";
+  $row = $mysql->getTableSize($schema,$table);
+  $table_name = $row['table_name'];
+  $mb = $row['total_db_data_in_mb'];
+  echo "mb=$mb\n";
+}
+
+class MysqlTblSize {
+
+  private $dbh;
+
+  public function __construct($dbh) {
+    $this->dbh = $dbh;
+  }
+
+  public function getTableSize($schema,$table) {
+    $bind = array($schema,$table);
+    $sql = <<<EOT
+select sum( data_length ) /1024 /1024 AS total_db_data_in_mb, table_name
+from information_schema.tables
+where table_schema = ? and table_name = ?
+EOT;
+    $stmt = $this->dbh->prepare($sql);
+    $stmt->execute($bind);
+    return $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+  public function getSchemaSize($schema) {
+    $bind = array($schema);
+    $sql = <<<EOT
+select sum( data_length ) /1024 /1024 AS total_db_data_in_mb, table_name
+from information_schema.tables
+where table_schema = ?
+EOT;
+    $stmt = $this->dbh->prepare($sql);
+    $stmt->execute($bind);
+    return $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+
+}
