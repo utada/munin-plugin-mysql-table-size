@@ -38,6 +38,8 @@ vi /etc/munin/plugin-conf.d/munin-node
   env.mysqlpassword munin
   env.tables my_schema_name.my_table_name my_schema_name2.my_table_name2 ...
 
+In mysql,grant munin user global select,super,proccess privileges.
+
 Don't forget to Test as follows
 
   cd /etc/munin/plugins/
