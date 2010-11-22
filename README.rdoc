@@ -1,0 +1,48 @@
+= Munin plugin mysql-table-size
+
+Munin plugins for getting multiple mysql table data length.
+
+= Requirements
+
+* PHP 5.3* with PDO mysql driver
+* Munin 1.4.5
+
+== Installation
+
+The plugins follows the default munin installation scheme:
+  git clone git@github.com:utada/munin-plugin-mysql-table-size.git
+  sudo cp mysql_table_size /usr/local/share/munin/plugins/
+  sudo chmod +x /usr/local/share/munin/plugins/mysql_table_size
+  sudo ln -s /usr/local/share/munin/plugins/mysql_table_size /etc/munin/plugins/mysql_table_size
+
+vi /etc/munin/plugin-conf.d/munin-node
+
+  [mysql_table_size]
+  env.dbname mydb
+  env.dsn mysql:host=127.0.0.1;port=3306
+  env.mysqluser munin
+  env.mysqlpassword munin
+  env.tables my_schema_name.my_table_name
+
+
+if you want to load multi table sizes in a single graph
+
+  sudo ln -s /usr/local/share/munin/plugins/mysql_table_size /etc/munin/plugins/mysql_table_size_${dbname}
+
+vi /etc/munin/plugin-conf.d/munin-node
+
+  [mysql_table_size_${dbname}]
+  env.dbname ${dbname}
+  env.dsn mysql:host=127.0.0.1;port=3307
+  env.mysqluser munin
+  env.mysqlpassword munin
+  env.tables my_schema_name.my_table_name my_schema_name2.my_table_name2 ...
+
+Don't forget to Test as follows
+
+  cd /etc/munin/plugins/
+  sudo munin-run mysql_table_size
+
+if you get table_sizes successfully,then restart munin-node
+  sudo service munin-node restart
+
