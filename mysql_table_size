@@ -47,7 +47,6 @@ foreach ($table_list as $_str_schema_table) {
   $table  = $_ary_schema_table[1];
   
   $row = $mysql->getTableSize($schema,$table);
-  $table_name = $row['table_name'];
   $data_length = $row['data_length'];
   echo "$table.value $data_length\n";
 }
@@ -63,7 +62,7 @@ class MysqlTblSize {
   public function getTableSize($schema,$table) {
     $bind = array($schema,$table);
     $sql = <<<EOT
-select data_length, table_name
+select data_length
 from information_schema.tables
 where table_schema = ? and table_name = ?
 EOT;
@@ -75,7 +74,7 @@ EOT;
   public function getSchemaSize($schema) {
     $bind = array($schema);
     $sql = <<<EOT
-select sum( data_length ) sum_data_length , table_name
+select sum( data_length ) sum_data_length 
 from information_schema.tables
 where table_schema = ?
 EOT;
