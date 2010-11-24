@@ -49,6 +49,7 @@ if you get table_sizes successfully,then restart munin-node
   sudo service munin-node restart
 
 * mysql schema size
+
   sudo cp mysql_schema_size /usr/local/share/munin/plugins/
   sudo chmod +x /usr/local/share/munin/plugins/mysql_schema_size
   sudo ln -s /usr/local/share/munin/plugins/mysql_schema_size /etc/munin/plugins/mysql_schema_size
@@ -63,11 +64,11 @@ vi /etc/munin/plugin-conf.d/munin-node
 
 if you want to collect remote db sizes.
 
-  sudo ln -s /usr/local/share/munin/plugins/mysql_table_size /etc/munin/plugins/mysql_table_size_${dbname}
+  sudo ln -s /usr/local/share/munin/plugins/mysql_schema_size /etc/munin/plugins/mysql_schema_size_${dbname}
 
 vi /etc/munin/plugin-conf.d/munin-node
 
-  [mysql_table_size_${dbname}]
+  [mysql_schema_size_${dbname}]
   env.dbname ${dbname}
   env.dsn mysql:host=xxxxxxxxx;port=xxxx
   env.mysqluser munin
@@ -78,6 +79,6 @@ Don't forget to Test as follows
   cd /etc/munin/plugins/
   sudo munin-run mysql_schema_size
 
-if you get table_sizes successfully,then restart munin-node
+if you get schema_sizes successfully,then restart munin-node
   sudo service munin-node restart
 
