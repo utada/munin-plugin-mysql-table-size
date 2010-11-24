@@ -1,6 +1,6 @@
-= Munin plugin mysql-table-size
+= Munin plugin mysql-schema-size/mysql-table-size
 
-Munin plugins for getting multiple mysql table data length.
+Munin plugins for getting multiple mysql schema/table data size.
 
 = Requirements
 
@@ -8,6 +8,8 @@ Munin plugins for getting multiple mysql table data length.
 * Munin 1.4.5
 
 == Installation
+
+*mysql table size
 
 The plugins follows the default munin installation scheme:
   git clone git@github.com:utada/munin-plugin-mysql-table-size.git
@@ -38,12 +40,43 @@ vi /etc/munin/plugin-conf.d/munin-node
   env.mysqlpassword munin
   env.tables my_schema_name.my_table_name my_schema_name2.my_table_name2 ...
 
-In mysql,grant munin user global select,super,proccess privileges.
-
 Don't forget to Test as follows
 
   cd /etc/munin/plugins/
   sudo munin-run mysql_table_size
+
+if you get table_sizes successfully,then restart munin-node
+  sudo service munin-node restart
+
+*mysql schema size
+  sudo cp mysql_schema_size /usr/local/share/munin/plugins/
+  sudo chmod +x /usr/local/share/munin/plugins/mysql_schema_size
+  sudo ln -s /usr/local/share/munin/plugins/mysql_schema_size /etc/munin/plugins/mysql_schema_size
+
+vi /etc/munin/plugin-conf.d/munin-node
+
+  [mysql_schema_size]
+  env.dbname mydb
+  env.dsn mysql:host=127.0.0.1;port=xxxx
+  env.mysqluser munin
+  env.mysqlpassword munin
+
+if you want to collect remote db sizes.
+
+  sudo ln -s /usr/local/share/munin/plugins/mysql_table_size /etc/munin/plugins/mysql_table_size_${dbname}
+
+vi /etc/munin/plugin-conf.d/munin-node
+
+  [mysql_table_size_${dbname}]
+  env.dbname ${dbname}
+  env.dsn mysql:host=xxxxxxxxx;port=xxxx
+  env.mysqluser munin
+  env.mysqlpassword munin
+
+Don't forget to Test as follows
+
+  cd /etc/munin/plugins/
+  sudo munin-run mysql_schema_size
 
 if you get table_sizes successfully,then restart munin-node
   sudo service munin-node restart
