@@ -50,6 +50,8 @@ if you get table_sizes successfully,then restart munin-node
 
 * mysql schema size
 
+To get schema size
+
   sudo cp mysql_schema_size /usr/local/share/munin/plugins/
   sudo chmod +x /usr/local/share/munin/plugins/mysql_schema_size
   sudo ln -s /usr/local/share/munin/plugins/mysql_schema_size /etc/munin/plugins/mysql_schema_size
